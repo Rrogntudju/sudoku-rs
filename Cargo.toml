@@ -1,0 +1,13 @@
+[package]
+name = "sudoku"
+version = "0.2.0"
+edition = "2018"
+
+[dependencies]
+ahash = "0.7"
+lazy_static = "1.14"
+
+[profile.release]
+opt-level = 3
+lto = "fat" 
+codegen-units = 1
