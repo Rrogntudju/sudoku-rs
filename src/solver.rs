@@ -279,7 +279,7 @@ impl<'a> Sudoku<'a> {
                 }
             }
         }
-        self.make_puzzle(17, rng) // Give up and make a new puzzle
+        self.make_puzzle(n, rng) // Give up and make a new puzzle
     }
 
     #[cfg(feature = "test")]
