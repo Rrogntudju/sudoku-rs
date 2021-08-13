@@ -5,7 +5,10 @@ edition = "2018"
 
 [dependencies]
 ahash = "0.7"
-lazy_static = "1.14"
+lazy_static = "1.4"
+
+[features]
+test = []
 
 [profile.release]
 opt-level = 3

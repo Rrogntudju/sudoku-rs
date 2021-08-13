@@ -241,4 +241,60 @@ impl<'a> Sudoku<'a> {
             Err(PuzzleError::InvalidGrid)
         }
     }
+
+    #[cfg(feature = "test")]
+    pub fn random_puzzle(&self, n: usize, rng: &mut ThreadRng) -> String {
+        /*  Make a random puzzle with N or more assignments. Restart on contradictions.
+        Note the resulting puzzle is not guaranteed to be solvable, but empirically
+        about 99.8% of them are solvable. Some have multiple solutions. */
+        let mut values = HashMap::<&str, Vec<char>, RandomState>::with_capacity_and_hasher(81, RandomState::default());
+        for s in &self.squares {
+            values.insert(s.clone(), self.cols.clone());
+        }
+        let mut squares = self.squares.clone();
+        squares.shuffle(rng);
+        for s in &squares {
+            let d2 = values[s].clone();
+            if !self.assign(&mut values, s, d2.choose(rng).unwrap()) {
+                break;
+            }
+            let mut ds: Vec<Vec<char>> = values.iter().filter(|&(_, v)| v.len() == 1).map(|(_, v)| v.clone()).collect();
+            if ds.len() >= n {
+                ds.sort();
+                ds.dedup();
+                if ds.len() >= 8 {
+                    return self
+                        .squares
+                        .iter()
+                        .map(|s| if values[s].len() == 1 { values[s][0] } else { '.' })
+                        .collect();
+                }
+            }
+        }
+        self.random_puzzle(17, rng) // Give up and make a new puzzle
+    }
+
+    #[cfg(feature = "test")]
+    pub fn test(&self) {
+        // A set of unit tests.
+        assert_eq!(self.squares.len(), 81);
+        assert_eq!(self.unitlist.len(), 27);
+        assert!(self.squares.iter().all(|s| self.units[s].len() == 3));
+        assert!(self.squares.iter().all(|s| self.peers[s].len() == 20));
+        assert_eq!(
+            self.units.get("C2"),
+            Some(&vec![
+                vec!["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2", "I2"],
+                vec!["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"],
+                vec!["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
+            ])
+        );
+
+        let mut peers_c2 = vec![
+            "A2", "B2", "D2", "E2", "F2", "G2", "H2", "I2", "C1", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "A1", "A3", "B1", "B3",
+        ];
+        peers_c2.sort();
+        assert_eq!(self.peers.get("C2"), Some(&peers_c2));
+        println!("All tests passed!");
+    }
 }
