@@ -243,7 +243,7 @@ impl<'a> Sudoku<'a> {
     }
 
     #[cfg(feature = "test")]
-    pub fn random_puzzle(&self, n: usize, rng: &mut ThreadRng) -> String {
+    pub fn random_puzzle(&self, n: usize) -> String {
         /*  Make a random puzzle with N or more assignments. Restart on contradictions.
         Note the resulting puzzle is not guaranteed to be solvable, but empirically
         about 99.8% of them are solvable. Some have multiple solutions. */
@@ -252,6 +252,7 @@ impl<'a> Sudoku<'a> {
             values.insert(s.clone(), self.cols.clone());
         }
         let mut squares = self.squares.clone();
+        let mut rng = rand::thread_rng();
         squares.shuffle(rng);
         for s in &squares {
             let d2 = values[s].clone();
