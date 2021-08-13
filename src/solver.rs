@@ -242,21 +242,23 @@ impl<'a> Sudoku<'a> {
         }
     }
 
-    #[cfg(feature = "test")]
+#[cfg(feature = "test")]
     pub fn random_puzzle(&self, n: usize) -> String {
         /*  Make a random puzzle with N or more assignments. Restart on contradictions.
         Note the resulting puzzle is not guaranteed to be solvable, but empirically
         about 99.8% of them are solvable. Some have multiple solutions. */
+        use rand::prelude::SliceRandom;
+
         let mut values = HashMap::<&str, Vec<char>, RandomState>::with_capacity_and_hasher(81, RandomState::default());
         for s in &self.squares {
             values.insert(s.clone(), self.cols.clone());
         }
         let mut squares = self.squares.clone();
         let mut rng = rand::thread_rng();
-        squares.shuffle(rng);
+        squares.shuffle(&mut rng);
         for s in &squares {
             let d2 = values[s].clone();
-            if !self.assign(&mut values, s, d2.choose(rng).unwrap()) {
+            if !self.assign(&mut values, s, d2.choose(&mut rng).unwrap()) {
                 break;
             }
             let mut ds: Vec<Vec<char>> = values.iter().filter(|&(_, v)| v.len() == 1).map(|(_, v)| v.clone()).collect();
@@ -272,7 +274,7 @@ impl<'a> Sudoku<'a> {
                 }
             }
         }
-        self.random_puzzle(17, rng) // Give up and make a new puzzle
+        self.random_puzzle(17) // Give up and make a new puzzle
     }
 
     #[cfg(feature = "test")]
