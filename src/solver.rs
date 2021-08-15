@@ -62,7 +62,7 @@ type AHashMap<K, V> = HashMap<K, V, RandomState>;
 
 #[derive(Debug)]
 pub struct Sudoku<'a> {
-    cols: &'a Vec<char>,
+    cols: Vec<char>,
     squares: Vec<&'a str>,
     unitlist: Vec<Vec<&'a str>>,
     units: AHashMap<&'a str, Vec<Vec<&'a str>>>,
@@ -71,7 +71,7 @@ pub struct Sudoku<'a> {
 
 impl<'a> Sudoku<'a> {
     pub fn new() -> Self {
-        let (cols, squares, unitlist) = (&BRICKS.0, &BRICKS.1, &BRICKS.2);
+        let (cols, squares, unitlist) = (BRICKS.0.clone(), &BRICKS.1, &BRICKS.2);
 
         let mut squares_ref = Vec::<&str>::with_capacity(81);
         for s in squares {
