@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use std::{collections::HashMap, fmt};
 
 lazy_static! {
-    static ref BRICKS: (Vec<char>, Vec<char>, Vec<String>, Vec<Vec<String>>) = legos();
+    static ref BRICKS: (Vec<char>, Vec<String>, Vec<Vec<String>>) = legos();
 }
 
 fn cross(rows: &[char], cols: &[char]) -> Vec<String> {
@@ -17,7 +17,7 @@ fn cross(rows: &[char], cols: &[char]) -> Vec<String> {
     v
 }
 
-pub fn legos() -> (Vec<char>, Vec<char>, Vec<String>, Vec<Vec<String>>) {
+pub fn legos() -> (Vec<char>, Vec<String>, Vec<Vec<String>>) {
     let cols: Vec<char> = "123456789".chars().collect();
     let rows: Vec<char> = "ABCDEFGHI".chars().collect();
     let squares = cross(&rows, &cols);
@@ -37,7 +37,7 @@ pub fn legos() -> (Vec<char>, Vec<char>, Vec<String>, Vec<Vec<String>>) {
         }
     }
 
-    (cols, rows, squares, unitlist)
+    (cols, squares, unitlist)
 }
 
 #[derive(Debug)]
@@ -62,8 +62,7 @@ type AHashMap<K, V> = HashMap<K, V, RandomState>;
 
 #[derive(Debug)]
 pub struct Sudoku<'a> {
-    cols: Vec<char>,
-    rows: Vec<char>,
+    cols: &'a Vec<char>,
     squares: Vec<&'a str>,
     unitlist: Vec<Vec<&'a str>>,
     units: AHashMap<&'a str, Vec<Vec<&'a str>>>,
@@ -72,7 +71,7 @@ pub struct Sudoku<'a> {
 
 impl<'a> Sudoku<'a> {
     pub fn new() -> Self {
-        let (cols, rows, squares, unitlist) = (BRICKS.0.clone(), BRICKS.1.clone(), &BRICKS.2, &BRICKS.3);
+        let (cols, squares, unitlist) = (&BRICKS.0, &BRICKS.1, &BRICKS.2);
 
         let mut squares_ref = Vec::<&str>::with_capacity(81);
         for s in squares {
@@ -106,7 +105,6 @@ impl<'a> Sudoku<'a> {
 
         Self {
             cols,
-            rows,
             squares: squares_ref,
             unitlist: unitlist_ref,
             units,
