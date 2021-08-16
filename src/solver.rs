@@ -90,15 +90,15 @@ impl<'a> Sudoku<'a> {
         //  units is a dictionary where each square maps to the list of units that contain the square
         let mut units = AHashMap::<&str, Vec<Vec<&str>>>::with_capacity_and_hasher(81, RandomState::default());
         for s in &squares_ref {
-            let unit_s: Vec<Vec<&str>> = unitlist_ref.iter().cloned().filter(|u| u.contains(&s)).collect();
+            let unit_s: Vec<Vec<&str>> = unitlist_ref.iter().cloned().filter(|u| u.contains(s)).collect();
             units.insert(s, unit_s);
         }
 
         //  peers is a dictionary where each square s maps to the set of squares formed by the union of the squares in the units of s, but not s itself
         let mut peers = AHashMap::<&str, Vec<&str>>::with_capacity_and_hasher(81, RandomState::default());
         for s in &squares_ref {
-            let mut peers_s: Vec<&str> = units[s].concat().iter().filter(|p| *p != s).map(|p| *p).collect();
-            peers_s.sort();
+            let mut peers_s: Vec<&str> = units[s].concat().iter().filter(|p| *p != s).copied().collect();
+            peers_s.sort_unstable();
             peers_s.dedup();
             peers.insert(s, peers_s);
         }
@@ -121,7 +121,7 @@ impl<'a> Sudoku<'a> {
             .collect();
         if grid_chars.len() == 81 {
             let mut grid_values = AHashMap::<&str, Vec<char>>::with_capacity_and_hasher(81, RandomState::default());
-            grid_values.extend(self.squares.iter().map(|s| *s).zip(grid_chars.into_iter()));
+            grid_values.extend(self.squares.iter().copied().zip(grid_chars.into_iter()));
             Ok(grid_values)
         } else {
             Err(PuzzleError::InvalidGrid)
@@ -167,12 +167,12 @@ impl<'a> Sudoku<'a> {
         }
         // (rule 2) If a unit u is reduced to only one place for a value d, then put it there.
         for u in &self.units[s] {
-            let dplaces: Vec<&str> = u.iter().filter(|s2| values[**s2].contains(d)).map(|s2| *s2).collect();
+            let dplaces: Vec<&str> = u.iter().filter(|s2| values[**s2].contains(d)).copied().collect();
             if dplaces.is_empty() {
                 return false; // Contradiction: no place for self value
             }
             // if d can only be in one place in unit assign it there
-            if dplaces.len() == 1 && !self.assign(values, &dplaces[0], d) {
+            if dplaces.len() == 1 && !self.assign(values, dplaces[0], d) {
                 return false;
             }
         }
