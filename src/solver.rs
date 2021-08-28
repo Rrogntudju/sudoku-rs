@@ -18,8 +18,8 @@ fn cross(rows: &[char], cols: &[char]) -> Vec<String> {
 }
 
 pub fn legos() -> (Vec<char>, Vec<String>, Vec<Vec<String>>) {
-    let cols: Vec<char> = "123456789".chars().collect();
-    let rows: Vec<char> = "ABCDEFGHI".chars().collect();
+    let cols = vec!['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let rows = vec!['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
     let squares = cross(&rows, &cols);
     let mut unitlist = Vec::<Vec<String>>::with_capacity(27);
     // columns
@@ -66,6 +66,7 @@ pub struct Sudoku<'a> {
     unitlist: Vec<Vec<&'a str>>,
     units: FnvHashMap<&'a str, Vec<Vec<&'a str>>>,
     peers: FnvHashMap<&'a str, Vec<&'a str>>,
+    solved: Vec<String>,
 }
 
 impl<'a> Sudoku<'a> {
@@ -102,12 +103,16 @@ impl<'a> Sudoku<'a> {
             peers.insert(s, peers_s);
         }
 
+        // a solved unit
+        let solved = cols.iter().map(char::to_string).collect::<Vec<String>>();
+
         Self {
             cols,
             squares: squares_ref,
             unitlist: unitlist_ref,
             units,
             peers,
+            solved,
         }
     }
 
@@ -210,7 +215,7 @@ impl<'a> Sudoku<'a> {
         let unitsolved = |unit: &Vec<&str>| {
             let mut digits_values = unit.iter().map(|s| values[*s].iter().collect()).collect::<Vec<String>>();
             digits_values.sort();
-            digits_values == self.cols.iter().map(char::to_string).collect::<Vec<String>>()
+            digits_values == self.solved
         };
         self.unitlist.iter().all(unitsolved)
     }
