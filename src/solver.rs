@@ -1,11 +1,9 @@
 // From Peter Norvig’s Sudoku solver     http://www.norvig.com/sudoku.html
 use fnv::FnvHashMap;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use std::fmt;
 
-lazy_static! {
-    static ref BRICKS: (Vec<char>, Vec<String>, Vec<Vec<String>>) = legos();
-}
+static BRICKS: Lazy<(Vec<char>, Vec<String>, Vec<Vec<String>>)> = Lazy::new(|| legos());
 
 fn cross(rows: &[char], cols: &[char]) -> Vec<String> {
     let mut v = Vec::with_capacity(rows.len() * cols.len());
