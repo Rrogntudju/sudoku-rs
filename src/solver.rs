@@ -243,13 +243,7 @@ impl<'a> Sudoku<'a> {
     }
 
     #[cfg(feature = "test")]
-    pub fn random_puzzle(&self, n: usize) -> String {
-        let mut rng = rand::thread_rng();
-        self.make_puzzle(n, &mut rng)
-    }
-
-    #[cfg(feature = "test")]
-    fn make_puzzle(&self, n: usize, rng: &mut rand::rngs::ThreadRng) -> String {
+    fn make_puzzle(&self, n: usize) -> String {
         /*  Make a random puzzle with N or more assignments. Restart on contradictions.
         Note the resulting puzzle is not guaranteed to be solvable, but empirically
         about 99.8% of them are solvable. Some have multiple solutions. */
@@ -260,10 +254,10 @@ impl<'a> Sudoku<'a> {
             values.insert(s.clone(), self.cols.clone());
         }
         let mut squares = self.squares.clone();
-        squares.shuffle(rng);
+        squares.shuffle(&mut rand::thread_rng());
         for s in &squares {
             let d2 = values[s].clone();
-            if !self.assign(&mut values, s, d2.choose(rng).unwrap()) {
+            if !self.assign(&mut values, s, d2.choose(&mut rand::thread_rng()).unwrap()) {
                 break;
             }
             let mut ds: Vec<Vec<char>> = values.iter().filter(|&(_, v)| v.len() == 1).map(|(_, v)| v.clone()).collect();
@@ -279,7 +273,7 @@ impl<'a> Sudoku<'a> {
                 }
             }
         }
-        self.make_puzzle(n, rng) // Give up and make a new puzzle
+        self.make_puzzle(n) // Give up and make a new puzzle
     }
 
     #[cfg(feature = "test")]
