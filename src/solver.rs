@@ -243,7 +243,7 @@ impl<'a> Sudoku<'a> {
     }
 
     #[cfg(feature = "test")]
-    fn make_puzzle(&self, n: usize) -> String {
+    pub fn make_puzzle(&self, n: usize) -> String {
         /*  Make a random puzzle with N or more assignments. Restart on contradictions.
         Note the resulting puzzle is not guaranteed to be solvable, but empirically
         about 99.8% of them are solvable. Some have multiple solutions. */
