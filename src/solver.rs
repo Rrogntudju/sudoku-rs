@@ -15,7 +15,7 @@ fn cross(rows: &[char], cols: &[char]) -> Vec<String> {
     v
 }
 
-pub fn legos() -> (Vec<char>, Vec<String>, Vec<Vec<String>>) {
+fn legos() -> (Vec<char>, Vec<String>, Vec<Vec<String>>) {
     let cols = vec!['1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let rows = vec!['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
     let squares = cross(&rows, &cols);
