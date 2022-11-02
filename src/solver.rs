@@ -3,7 +3,7 @@ use fnv::FnvHashMap;
 use once_cell::sync::Lazy;
 use std::fmt;
 
-static BRICKS: Lazy<(Vec<char>, Vec<String>, Vec<Vec<String>>)> = Lazy::new(|| legos());
+static BRICKS: Lazy<(Vec<char>, Vec<String>, Vec<Vec<String>>)> = Lazy::new(legos);
 
 fn cross(rows: &[char], cols: &[char]) -> Vec<String> {
     let mut v = Vec::with_capacity(rows.len() * cols.len());
